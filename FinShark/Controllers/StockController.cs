@@ -1,5 +1,6 @@
 ﻿using FinShark.Data;
 using FinShark.Dtos.Stock;
+using FinShark.Helpers;
 using FinShark.Interfaces;
 using FinShark.Mappers;
 using FinShark.Models;
@@ -23,16 +24,22 @@ namespace FinShark.Controllers
 
         [HttpGet]
 
-        public async  Task<IActionResult> GetAll()
+        public async  Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            var stocks = await _stockRepository.GetAllStocksAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var stocks = await _stockRepository.GetAllStocksAsync(query);
 
             var stockDto = stocks.Select(s => s.ToStockDto());
 
             return Ok(stocks);
         }
 
-
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
             {

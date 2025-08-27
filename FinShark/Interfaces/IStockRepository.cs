@@ -1,11 +1,12 @@
 ﻿using FinShark.Dtos.Stock;
+using FinShark.Helpers;
 using FinShark.Models;
 
 namespace FinShark.Interfaces
 {
     public interface IStockRepository
     {
-        Task<List<Stock>> GetAllStocksAsync();
+        Task<List<Stock>> GetAllStocksAsync(QueryObject query);
 
         Task<Stock?> GetStockByIdAsync(int id);
 
@@ -13,5 +14,6 @@ namespace FinShark.Interfaces
 
         Task<Stock?> UpdateStockAsync(int id, UpdateStockRequestDto stockDto);
         Task<Stock?> DeleteStockAsync(int id);
+        Task<bool> stockExists(int id);
     }
 }
