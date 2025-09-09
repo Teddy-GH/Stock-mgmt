@@ -9,6 +9,7 @@
 *.user
 *.suo
 *.sln.docstates
+*.bin
 
 # Build and binary files
 [Bb]in/
