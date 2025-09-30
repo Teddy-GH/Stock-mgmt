@@ -78,7 +78,6 @@ namespace FinShark.Repository
             existingStock.Purchase = stockDto.Purchase;
             existingStock.LastDiv = stockDto.LastDiv;
             existingStock.Industry = stockDto.Industry;
-            existingStock.MarketCap = stockDto.MarketCap;
 
             await _context.SaveChangesAsync();
 

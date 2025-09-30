@@ -18,10 +18,11 @@ builder.Services.AddControllers().AddNewtonsoftJson(opt =>
     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 });
 builder.Services.AddDbContext<ApplicationDbContext>(opt => 
-opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection1")));
 
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
 
 var app = builder.Build();
 

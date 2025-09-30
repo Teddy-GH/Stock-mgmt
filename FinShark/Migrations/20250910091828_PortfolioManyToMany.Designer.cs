@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinShark.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250909183742_PortfolioManyToMany")]
+    [Migration("20250910091828_PortfolioManyToMany")]
     partial class PortfolioManyToMany
     {
         /// <inheritdoc />
