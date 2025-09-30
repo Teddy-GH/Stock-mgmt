@@ -9,6 +9,7 @@ namespace FinShark.Interfaces
         Task<List<Stock>> GetAllStocksAsync(QueryObject query);
 
         Task<Stock?> GetStockByIdAsync(int id);
+        Task<Stock?> GetBySymbolAsync(string symbol);
 
         Task<Stock> CreateStock(Stock stock);
 

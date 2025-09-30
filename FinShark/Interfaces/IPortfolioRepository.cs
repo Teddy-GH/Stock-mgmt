@@ -8,7 +8,8 @@ namespace FinShark.Interfaces
         //Task<Portfolio> GetAllPortfolio();
         //Task<Portfolio> GetPortfolio(int id);
 
-        //Task<Portfolio> CreatePortfolio(Portfolio portfolio);
+        Task<Portfolio> CreatePortfolio(Portfolio portfolio);
+        Task<Portfolio> DeletePortfolio(AppUser appUser, string symbol);
 
         //Task<Portfolio> UpdatePortfolio(Portfolio portfolio);
     }
