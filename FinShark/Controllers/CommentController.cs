@@ -1,8 +1,10 @@
 ﻿using FinShark.Dtos.Comment;
+using FinShark.Extensions;
 using FinShark.Interfaces;
 using FinShark.Mappers;
 using FinShark.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinShark.Controllers
@@ -13,10 +15,15 @@ namespace FinShark.Controllers
     {
         private readonly ICommentRepository _commentRepository;
         private readonly IStockRepository _stockRepository;
-        public CommentController(ICommentRepository commentRepository, IStockRepository stockRepository)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IFMPService _fmpService;
+
+        public CommentController(ICommentRepository commentRepository, IStockRepository stockRepository, UserManager<AppUser> userManager, IFMPService fmpService)
         {
             _commentRepository = commentRepository;
             _stockRepository = stockRepository;
+            _userManager = userManager;
+            _fmpService = fmpService;
         }
 
         [HttpGet]
@@ -43,24 +50,35 @@ namespace FinShark.Controllers
             return Ok(comment.ToCommentDto());
 
         }
-
-        [HttpPost("{stockId}")]
-        public async Task<IActionResult> Create([FromRoute] int stockId, [FromBody] CreateCommentRequestDto createCommentRequestDto)
+        [HttpPost]
+        [Route("{symbol:alpha}")]
+        public async Task<IActionResult> Create([FromRoute] string symbol, CreateCommentDto commentDto)
         {
-            var stock = _stockRepository.stockExists(stockId);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var stock = await _stockRepository.GetBySymbolAsync(symbol);
 
             if (stock == null)
             {
-                return BadRequest("Stock doesn't exist");
+                stock = await _fmpService.FindStockBySymbolAsync(symbol);
+                if (stock == null)
+                {
+                    return BadRequest("Stock does not exists");
+                }
+                else
+                {
+                    await _stockRepository.CreateStock(stock);
+                }
             }
 
-            var newComment = createCommentRequestDto.ToCommentFromCreate(stockId);
+            var username = User.GetUsername();
+            var appUser = await _userManager.FindByNameAsync(username);
 
-            await _commentRepository.CreateAsync(newComment);
-
-            return CreatedAtAction(nameof(Get), new { id = newComment.Id }, newComment.ToCommentDto());
-
-
+            var commentModel = commentDto.ToCommentFromCreate(stock.Id);
+            commentModel.AppUserId = appUser.Id;
+            await _commentRepo.CreateAsync(commentModel);
+            return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, commentModel.ToCommentDto());
         }
 
         [HttpPut]

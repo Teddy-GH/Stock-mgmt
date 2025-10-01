@@ -1,6 +1,7 @@
 ﻿using FinShark.Extensions;
 using FinShark.Interfaces;
 using FinShark.Models;
+using FinShark.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +16,14 @@ namespace FinShark.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IStockRepository _stockRepo;
         private readonly IPortfolioRepository _portfolioRepo;
-        public PortfolioController(UserManager<AppUser> userManager, IStockRepository stockRepo, IPortfolioRepository portfolioRepo)
+        private readonly IFMPService _fmpService;
+
+        public PortfolioController(UserManager<AppUser> userManager, IStockRepository stockRepo, IPortfolioRepository portfolioRepo, IFMPService fmpService)
         {
             _userManager = userManager;
             _stockRepo = stockRepo;
             _portfolioRepo = portfolioRepo;
+            _fmpService = fmpService;
         }
 
         [HttpGet]
@@ -44,8 +48,18 @@ namespace FinShark.Controllers
 
             if (stock == null)
             {
-                return BadRequest("Stock not found!");
+                stock = await _fmpService.FindStockBySymbolAsync(symbol);
+                if (stock == null)
+                {
+                    return BadRequest("Stock does not exists");
+                }
+                else
+                {
+                    await _stockRepo.CreateStock(stock);
+                }
             }
+
+            if (stock == null) return BadRequest("Stock not found");
 
             var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
 
@@ -54,7 +68,7 @@ namespace FinShark.Controllers
             var portfolioModel = new Portfolio
             {
                 StockId = stock.Id,
-                AppUserId = appUser.Id,
+                AppUserId = appUser.Id
             };
 
             await _portfolioRepo.CreatePortfolio(portfolioModel);
@@ -67,8 +81,6 @@ namespace FinShark.Controllers
             {
                 return Created();
             }
-
-
         }
 
         [HttpDelete]

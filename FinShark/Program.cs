@@ -2,6 +2,7 @@ using FinShark.Data;
 using FinShark.Interfaces;
 using FinShark.Models;
 using FinShark.Repository;
+using FinShark.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -63,6 +64,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
+builder.Services.AddScoped<IFMPService, FMPService>();
+builder.Services.AddHttpClient<IFMPService, FMPService>();
 
 var app = builder.Build();
 

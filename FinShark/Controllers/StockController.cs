@@ -34,9 +34,9 @@ namespace FinShark.Controllers
 
             var stocks = await _stockRepository.GetAllStocksAsync(query);
 
-            var stockDto = stocks.Select(s => s.ToStockDto());
+            var stockDto = stocks.Select(s => s.ToStockDto()).ToList();
 
-            return Ok(stocks);
+            return Ok(stockDto);
         }
 
         [HttpGet("{id}")]

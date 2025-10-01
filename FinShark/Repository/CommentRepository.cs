@@ -40,12 +40,12 @@ namespace FinShark.Repository
 
         public async Task<List<Comment>> GetAllCommentAsync()
         {
-            return await _context.Comments.ToListAsync();
+            return await _context.Comments.Include(a => a.AppUser).ToListAsync();
         }
 
         public async Task<Comment?> GetCommentAsync(int id)
         {
-            return await _context.Comments.FindAsync(id);
+            return await _context.Comments.Include(a => a.AppUser).FirstOrDefaultAsync(c => c.Id == id);
 
          
         }
